@@ -1,7 +1,11 @@
 const { token } = require('./config.json');
-const { Client, Intents } = require('discord.js');
+const { Client, Intents, Interaction } = require('discord.js');
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
-if (client.login(token)) {
-    console.log('minden fasza');
-}
+
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isCommand()) return;
+    interaction.reply('kecske');
+})
+
+client.login(token)
