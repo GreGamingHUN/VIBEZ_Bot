@@ -13,3 +13,7 @@ To do:
 Features I want to make for the Bot:
 - Website for the MusicBot (where you can edit music queue and add music in the queue)
 - Android app for the MusicBot (where you can edit music queue and add music in the queue)
+
+Libraries used:
+- Discord.JS
+- play-dl
