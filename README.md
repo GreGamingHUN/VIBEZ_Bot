@@ -16,3 +16,5 @@ Features I want to make for the Bot:
 Libraries used:
 - Discord.JS
 - play-dl
+
+I started this project at May 31st, 2022
