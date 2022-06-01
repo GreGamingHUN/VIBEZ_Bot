@@ -1,7 +1,7 @@
 # VIBEZ
 A Musicbot for Discord using the Discord.js API
 
-My main goal is to make a wokring musicbot with my fresh knowledge of Javascript.
+My main goal is to make a working musicbot with my fresh knowledge of Javascript.
 
 To do:
 - Stop Music
