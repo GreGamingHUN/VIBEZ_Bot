@@ -1,5 +1,5 @@
 # VIBEZ
-A Musicbot for Discord using the Discord.js API
+A Musicbot for Discord using the Discord.js NodeJS module
 
 My main goal is to make a working musicbot with my fresh knowledge of Javascript.
 
@@ -13,7 +13,7 @@ Features I want to make for the Bot:
 - Website for the MusicBot (where you can edit music queue and add music in the queue)
 - Android app for the MusicBot (where you can edit music queue and add music in the queue)
 
-Libraries used:
+Modules used:
 - Discord.JS
 - play-dl
 
