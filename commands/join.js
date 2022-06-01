@@ -10,7 +10,12 @@ module.exports = {
         if (!voiceChannel) {
             await interaction.reply('Join a voice channel first');
         } else {
-            await joinVoiceChannel(voiceChannel);
+            await interaction.reply('Joined!');
+            await joinVoiceChannel({
+                channelId: voiceChannel.id,
+                guildId: interaction.guild.id,
+                adapterCreator: interaction.guild.voiceAdapterCreator
+            })
         }
     }
 }
