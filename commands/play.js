@@ -8,10 +8,16 @@ const { joinVoiceChannel,
         createAudioPlayer, 
         createAudioResource, 
         getVoiceConnection,
-        VoiceConnectionStatus} = require('@discordjs/voice');
+        VoiceConnectionStatus,
+        AudioPlayerStatus} = require('@discordjs/voice');
 const { link } = require('node:fs');
 
-var musicQueue = new Array();
+
+var playing = 0;
+var done = 0;
+var musicQueue = [];
+var musicQueueInfo = [];
+var player = createAudioPlayer();
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('play')
@@ -27,56 +33,89 @@ module.exports = {
         if (!voiceChannel) {
             await interaction.reply('Join a voice channel first');
         } else {         
-            const connection = joinVoiceChannel({
-                channelId: voiceChannel.id,
-                guildId: interaction.guild.id,
-                adapterCreator: interaction.guild.voiceAdapterCreator
-            });
             if (!interaction.options.getString('link')) {
-                await interaction.reply('no links');
+                await interaction.reply('No links');
             } else {
                 const linkArg = interaction.options.getString('link');
-                var musicInfo = (await playdl.video_basic_info(linkArg)).video_details;
+                musicQueue.push(linkArg);
 
-
-                
-                if (musicQueue[0]) {
-                    musicQueue.push(linkArg);
-                    global.musicQueue = musicQueue;
-                    interaction.reply(`${musicInfo.title} has been added to the Queue!`);
-                } else {
-                    musicQueue.push(linkArg);
-                    global.musicQueue = musicQueue;
-
-                    let stream = await playdl.stream(musicQueue[0]);
-                    
-                    let resource = createAudioResource(stream.stream, {
-                        inputType: stream.type
-                    })
-            
-                    let player = createAudioPlayer({
-                    
-                    })
-                    await player.play(resource)
-                    await connection.subscribe(player)
-                    global.musicInfo = musicInfo;
-                    await interaction.reply(`Now Playing: ${musicInfo.title}`)
-
-
-                    player.addListener("stateChange", (oldOne, newOne) => {
-                        if (newOne.status == "idle") {
-                            console.log("The song finished");
-                            musicQueue.splice(0, 1);
-                            var reply = '';
-                            musicQueue.forEach(element => {
-                                reply.concat(`${element}\n`);
-                            });
-                            console.log(reply);
-                            global.musicQueue = musicQueue;
-                        }
+                var connection;
+                if (!connection) {
+                    connection = joinVoiceChannel({
+                        channelId: voiceChannel.id,
+                        guildId: interaction.guild.id,
+                        adapterCreator: interaction.guild.voiceAdapterCreator
                     });
                 }
+
+                var musicInfo = (await playdl.video_basic_info(linkArg)).video_details;
+                musicQueueInfo.push(musicInfo);
+                global.musicQueueInfo = musicQueueInfo;
+
+                console.log('Queue: ')
+                musicQueueInfo.forEach(element => {
+                    console.log(`${element.title}\n`);
+                });
+                if (playing == 0) {
+                    playMusic(connection, player, musicQueue[0]);
+                    interaction.reply(`Now Playing: ${musicQueueInfo[0].title}`);
+                    playing = 1;
+                } else {
+                    interaction.reply(`${musicInfo.title} has been added to the Queue!`);
+                }
+                player.on('stateChange', (oldState, newState) => {
+                    console.log(`Old: ${oldState.status}, new ${newState.status}`);
+                    if (newState.status == 'buffering') {
+                        done = 0;
+                    }
+                    if (done == 0 && newState.status == "idle" && oldState.status == "playing") {
+                        console.log('do the funny')
+                        musicQueue.splice(0, 1);
+                        musicQueueInfo.splice(0, 1);
+
+                        if (musicQueue.length > 0) {
+                            playMusic(connection, player, musicQueue[0]);
+                            console.log('Queue: ')
+                            musicQueueInfo.forEach(element => {
+                                console.log(`${element.title}\n`);
+                            });
+                            playing = 1;
+                            done = 1;
+                            console.log(`now playing ${musicQueueInfo[0].title}`);
+                        } else {
+                            playing = 0;
+                        }
+    
+                        console.log('Queue: ');
+                        musicQueueInfo.forEach(element => {
+                            console.log(`${element.title}\n`);
+                        });
+                        done = 1;
+                    }
+                })
             }
         }
     }
 }
+
+
+async function playMusic(connection, player, link) {
+    let stream = await playdl.stream(link);
+    let resource = createAudioResource(stream.stream, {
+        inputType: stream.type
+    });
+    await player.play(resource)
+    await connection.subscribe(player);
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+/*                     let stream = await playdl.stream(musicQueue[0]);
+                    
+                    let resource = createAudioResource(stream.stream, {
+                        inputType: stream.type
+                    })
+                    let player = createAudioPlayer();
+                    await player.play(resource)
+                    await connection.subscribe(player); */

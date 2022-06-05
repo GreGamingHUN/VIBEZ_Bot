@@ -5,15 +5,10 @@ module.exports = {
         .setName('queue')
         .setDescription('Shows the Music Queue.'),
     async execute(interaction) {
-        if (!musicQueue) {
-            interaction.reply('The queue is empty!');
-        } else {
-            var reply = 'The Queue: \n';
-            var counter = 1;
-            musicQueue.forEach(element => {
-                reply.concat(`${counter}: ${element}\n`);
-            });
-            interaction.reply(reply);
-        }
+        var reply = `Queue: \n`;
+        musicQueueInfo.forEach(element => {
+            reply = reply.concat(`${element.title}\t\t${element.durationRaw}\n`)
+        });
+        interaction.reply(reply);
     }
 }
