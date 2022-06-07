@@ -5,7 +5,7 @@ module.exports = {
         .setName('np')
         .setDescription('Shows the currently playing song.'),
     async execute(interaction) {
-        var kecske = musicQueueInfo[0];
-        await interaction.reply(`Currently Playing: ${kecske.title}\t\t ${kecske.durationRaw}`)
+        var npMusic = musicQueueInfo[0];
+        await interaction.reply(`Currently Playing: ${npMusic.title}\t\t ${npMusic.durationRaw}`)
     }
 }

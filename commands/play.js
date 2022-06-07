@@ -18,6 +18,7 @@ var done = 0;
 var musicQueue = [];
 var musicQueueInfo = [];
 var player = createAudioPlayer();
+global.player = player;
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('play')
@@ -64,7 +65,7 @@ module.exports = {
                     interaction.reply(`${musicInfo.title} has been added to the Queue!`);
                 }
                 player.on('stateChange', (oldState, newState) => {
-                    console.log(`Old: ${oldState.status}, new ${newState.status}`);
+                    // console.log(`Old: ${oldState.status}, new ${newState.status}`);
                     if (newState.status == 'buffering') {
                         done = 0;
                     }
@@ -119,3 +120,24 @@ function sleep(ms) {
                     let player = createAudioPlayer();
                     await player.play(resource)
                     await connection.subscribe(player); */
+function nextMusic() {
+    musicQueue.splice(0, 1);
+                    musicQueueInfo.splice(0, 1);
+                    if (musicQueue.length > 0) {
+                        playMusic(connection, player, musicQueue[0]);
+                        console.log('Queue: ')
+                        musicQueueInfo.forEach(element => {
+                            console.log(`${element.title}\n`);
+                        });
+                        playing = 1;
+                        done = 1;
+                        console.log(`now playing ${musicQueueInfo[0].title}`);
+                    } else {
+                        playing = 0;
+                    }
+    
+                    console.log('Queue: ');
+                    musicQueueInfo.forEach(element => {
+                        console.log(`${element.title}\n`);
+                    }); 
+}
