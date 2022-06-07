@@ -6,7 +6,6 @@ My main goal is to make a working musicbot with my fresh knowledge of Javascript
 To do:
 - Stop Music
 - Skip Music
-- Check Queue
 - Play Music on multiple servers at once
 
 Features I want to make for the Bot:
