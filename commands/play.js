@@ -19,6 +19,7 @@ var musicQueue = [];
 var musicQueueInfo = [];
 var player = createAudioPlayer();
 global.player = player;
+var channelId;
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('play')
@@ -30,6 +31,7 @@ module.exports = {
 
 
     async execute(interaction) {
+        channelId = interaction.channelId;
         const voiceChannel = interaction.member.voice.channel
         if (!voiceChannel) {
             await interaction.reply('Join a voice channel first');
@@ -94,14 +96,7 @@ async function playMusic(connection, player, link) {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-/*                     let stream = await playdl.stream(musicQueue[0]);
-                    
-                    let resource = createAudioResource(stream.stream, {
-                        inputType: stream.type
-                    })
-                    let player = createAudioPlayer();
-                    await player.play(resource)
-                    await connection.subscribe(player); */
+
 global.nextMusic = function () {
     musicQueue.splice(0, 1);
     musicQueueInfo.splice(0, 1);
