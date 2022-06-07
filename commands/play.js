@@ -4,12 +4,12 @@ const playdl = require('play-dl');
 const path = require('node:path');
 
 const { joinVoiceChannel,
-        voiceConnectionStatus,
-        createAudioPlayer, 
-        createAudioResource, 
-        getVoiceConnection,
-        VoiceConnectionStatus,
-        AudioPlayerStatus} = require('@discordjs/voice');
+    voiceConnectionStatus,
+    createAudioPlayer,
+    createAudioResource,
+    getVoiceConnection,
+    VoiceConnectionStatus,
+    AudioPlayerStatus } = require('@discordjs/voice');
 const { link } = require('node:fs');
 
 
@@ -23,17 +23,17 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('play')
         .setDescription('Plays Music.')
-        .addStringOption(option => 
+        .addStringOption(option =>
             option.setName('link')
-            .setDescription('The link for the song')
-            .setRequired(false)),
+                .setDescription('The link for the song')
+                .setRequired(false)),
 
 
     async execute(interaction) {
         const voiceChannel = interaction.member.voice.channel
         if (!voiceChannel) {
             await interaction.reply('Join a voice channel first');
-        } else {         
+        } else {
             if (!interaction.options.getString('link')) {
                 await interaction.reply('No links');
             } else {
@@ -48,6 +48,7 @@ module.exports = {
                         adapterCreator: interaction.guild.voiceAdapterCreator
                     });
                 }
+                global.connection = connection;
 
                 var musicInfo = (await playdl.video_basic_info(linkArg)).video_details;
                 musicQueueInfo.push(musicInfo);
@@ -71,26 +72,7 @@ module.exports = {
                     }
                     if (done == 0 && newState.status == "idle" && oldState.status == "playing") {
                         console.log('do the funny')
-                        musicQueue.splice(0, 1);
-                        musicQueueInfo.splice(0, 1);
-
-                        if (musicQueue.length > 0) {
-                            playMusic(connection, player, musicQueue[0]);
-                            console.log('Queue: ')
-                            musicQueueInfo.forEach(element => {
-                                console.log(`${element.title}\n`);
-                            });
-                            playing = 1;
-                            done = 1;
-                            console.log(`now playing ${musicQueueInfo[0].title}`);
-                        } else {
-                            playing = 0;
-                        }
-    
-                        console.log('Queue: ');
-                        musicQueueInfo.forEach(element => {
-                            console.log(`${element.title}\n`);
-                        });
+                        nextMusic();
                         done = 1;
                     }
                 })
@@ -120,24 +102,24 @@ function sleep(ms) {
                     let player = createAudioPlayer();
                     await player.play(resource)
                     await connection.subscribe(player); */
-function nextMusic() {
+global.nextMusic = function () {
     musicQueue.splice(0, 1);
-                    musicQueueInfo.splice(0, 1);
-                    if (musicQueue.length > 0) {
-                        playMusic(connection, player, musicQueue[0]);
-                        console.log('Queue: ')
-                        musicQueueInfo.forEach(element => {
-                            console.log(`${element.title}\n`);
-                        });
-                        playing = 1;
-                        done = 1;
-                        console.log(`now playing ${musicQueueInfo[0].title}`);
-                    } else {
-                        playing = 0;
-                    }
-    
-                    console.log('Queue: ');
-                    musicQueueInfo.forEach(element => {
-                        console.log(`${element.title}\n`);
-                    }); 
+    musicQueueInfo.splice(0, 1);
+    if (musicQueue.length > 0) {
+        playMusic(connection, player, musicQueue[0]);
+        console.log('Queue: ')
+        musicQueueInfo.forEach(element => {
+            console.log(`${element.title}\n`);
+        });
+        playing = 1;
+        done = 1;
+        console.log(`now playing ${musicQueueInfo[0].title}`);
+    } else {
+        playing = 0;
+    }
+
+    console.log('Queue: ');
+    musicQueueInfo.forEach(element => {
+        console.log(`${element.title}\n`);
+    });
 }
