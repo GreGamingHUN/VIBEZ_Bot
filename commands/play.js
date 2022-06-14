@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const playdl = require('play-dl');
 const path = require('node:path');
+const fs = require('fs');
 
 const { joinVoiceChannel,
     voiceConnectionStatus,
@@ -62,6 +63,7 @@ module.exports = {
                 });
                 if (playing == 0) {
                     playMusic(connection, player, musicQueue[0]);
+                    writeQueue();
                     interaction.reply(`Now Playing: ${musicQueueInfo[0].title}`);
                     playing = 1;
                 } else {
@@ -82,7 +84,6 @@ module.exports = {
         }
     }
 }
-
 
 async function playMusic(connection, player, link) {
     let stream = await playdl.stream(link);
@@ -109,12 +110,24 @@ global.nextMusic = function () {
         playing = 1;
         done = 1;
         console.log(`now playing ${musicQueueInfo[0].title}`);
+        writeQueue
     } else {
         playing = 0;
     }
-
+    writeQueue();
     console.log('Queue: ');
     musicQueueInfo.forEach(element => {
         console.log(`${element.title}\n`);
     });
+}
+
+function writeQueue() {
+    let queueString = '';
+    musicQueueInfo.forEach(element => {
+        queueString = queueString.concat(`${element.title}\n`);
+    });
+    console.log(queueString)
+    fs.writeFile('np.txt', queueString, (err) => {
+        if (err) console.log(`valami nem jo ${err}`);
+      });
 }
