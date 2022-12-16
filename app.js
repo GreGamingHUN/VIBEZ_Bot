@@ -59,8 +59,13 @@ client.login(token);
 //Express stuff
 app.set('view engine', 'ejs');
 
+const { title } = require('./commands/play');
+
 app.get('/', function (req, res) {
-    res.render('pages/index.ejs');
+    console.log(title)
+    res.render('pages/index.ejs', {
+        title: title
+    });
 })
 
 app.listen(8080);

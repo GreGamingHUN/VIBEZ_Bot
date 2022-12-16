@@ -3,7 +3,6 @@ const { getVoiceConnection, createAudioPlayer, NoSubscriberBehavior, createAudio
 const { join } = require('node:path');
 const { createConnection } = require('./connect');
 const play = require('play-dl');
-const { createReadStream } = require('node:fs');
 
 const player = createAudioPlayer({
     behaviors: {
@@ -11,7 +10,7 @@ const player = createAudioPlayer({
     }
 })
 
-//const resource = createAudioResource(join(__dirname, 'sieg_heil.mp3'), { inlineVolume: true });
+let songTitle = "semmi";
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -31,14 +30,21 @@ module.exports = {
             }
             connection.subscribe(player);
             player.play(resource, {seek: 0});
-            
             const infodata = await play.video_info(link);
-            const title = infodata.video_details.title;
-
-            await interaction.editReply(`Started playing: ${title}`);
-        }
+            songTitle = infodata.video_details.title;
+            await interaction.editReply(`Started playing: ${songTitle}`);
+        },
+    title: songTitle
 };
 
+
 player.on('stateChange', (oldstate, newstate) => {
+    if (newstate.status == 'idle') {
+        exports.title = "semmi";
+        console.log(exports.title);
+    } else {
+        exports.title = songTitle;
+        console.log(exports.title);
+    }
 	console.log(`The player changed from ${oldstate.status} to ${newstate.status}`);
 })
